@@ -11,7 +11,11 @@ pub mod todo {
     use super::*;
 
   pub fn create_todo(ctx: Context<CreateTodo>, title: String, description: String) -> Result<()> {
-    
+    let todo_entry: &mut Account<TodoEntryState> = &mut ctx.accounts.todo_entry;
+    todo_entry.owner = ctx.accounts.owner.key;
+    todo_entry.title = title;
+    todo_entry.description = description;
+    Ok(())
   }
 }
 
@@ -22,10 +26,10 @@ pub struct CreateTodo<'info> {
     init,
     seeds = [title.as_bytes(), owner.key().as_ref()],
     bump,
-    space = 8 + Todo::INIT_SPACE,
+    space = 8 + TodoEntryState::INIT_SPACE,
     payer = owner,
   )]
-  pub todo: Account<'info, Todo>,
+  pub todo_entry: Account<'info, TodoEntryState>,
 
 
   #[account(mut)]
@@ -36,7 +40,7 @@ pub struct CreateTodo<'info> {
 
 #[account]
 #[derive(InitSpace)]
-pub struct Todo {
+pub struct TodoEntryState {
     pub owner: Pubkey,
     pub id: u64,
     #[max_len(20)]
