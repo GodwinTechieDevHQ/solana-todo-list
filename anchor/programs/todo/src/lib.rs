@@ -19,10 +19,14 @@ pub mod todo {
     Ok(())
   }
 
-  pub fn update_todo(ctx: Context<UpdateTodo>, title: String, description: String) -> Result<()> {
+  pub fn update_todo(ctx: Context<UpdateTodo>, _title: String, description: String) -> Result<()> {
     let todo_entry = &mut ctx.accounts.todo_entry;
     todo_entry.description = description;
 
+    Ok(())
+  }
+
+  pub fn delete_todo(ctx; Context<DeleteTodo>, title: String) -> Result<()> {
     Ok(())
   }
 }
@@ -56,6 +60,23 @@ pub struct UpdateTodo<'info> {
      realloc = 8 + TodoEntryState::INIT_SPACE,
      realloc::payer = owner,
      realloc::zero = true,
+  )]
+  pub todo_entry: Account<'info, TodoEntryState>,
+  
+  #[account(mut)]
+  pub owner: Signer<'info>,
+
+  pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+#[instruction(title: String)]
+pub struct DeleteTodo <'info> {
+  #[account(
+    mut,
+    seeds = [title.as_bytes(), owner.key.as_ref()],
+    bump,
+    close = owner,
   )]
   pub todo_entry: Account<'info, TodoEntryState>,
   
