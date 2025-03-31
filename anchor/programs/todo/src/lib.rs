@@ -12,9 +12,17 @@ pub mod todo {
 
   pub fn create_todo(ctx: Context<CreateTodo>, title: String, description: String) -> Result<()> {
     let todo_entry: &mut Account<TodoEntryState> = &mut ctx.accounts.todo_entry;
-    todo_entry.owner = ctx.accounts.owner.key;
+    todo_entry.owner = ctx.accounts.owner.key();
     todo_entry.title = title;
     todo_entry.description = description;
+    
+    Ok(())
+  }
+
+  pub fn update_todo(ctx: Context<UpdateTodo>, title: String, description: String) -> Result<()> {
+    let todo_entry = &mut ctx.accounts.todo_entry;
+    todo_entry.description = description;
+
     Ok(())
   }
 }
@@ -32,6 +40,25 @@ pub struct CreateTodo<'info> {
   pub todo_entry: Account<'info, TodoEntryState>,
 
 
+  #[account(mut)]
+  pub owner: Signer<'info>,
+
+  pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+#[instruction(title: String)]
+pub struct UpdateTodo<'info> {
+  #[account(
+     mut,
+     seeds = [title.as_bytes(), owner.key.as_ref()],
+     bump,
+     realloc = 8 + TodoEntryState::INIT_SPACE,
+     realloc::payer = owner,
+     realloc::zero = true,
+  )]
+  pub todo_entry: Account<'info, TodoEntryState>,
+  
   #[account(mut)]
   pub owner: Signer<'info>,
 
