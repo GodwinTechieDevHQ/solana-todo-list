@@ -15,7 +15,8 @@ pub mod todo {
     todo_entry.owner = ctx.accounts.owner.key();
     todo_entry.title = title;
     todo_entry.description = description;
-    
+
+
     Ok(())
   }
 
