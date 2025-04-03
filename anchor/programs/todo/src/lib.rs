@@ -4,7 +4,7 @@
 
 use anchor_lang::prelude::*;
 
-declare_id!("coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF");
+declare_id!("J5oFKN33T8k7Y4rKg8AR9F3NPyDXTJUto821EQj6WGjD");
 
 #[program]
 pub mod todo {
@@ -26,7 +26,7 @@ pub mod todo {
     Ok(())
   }
 
-  pub fn delete_todo(ctx; Context<DeleteTodo>, title: String) -> Result<()> {
+  pub fn delete_todo(_ctx: Context<DeleteTodo>, _title: String) -> Result<()> {
     Ok(())
   }
 }

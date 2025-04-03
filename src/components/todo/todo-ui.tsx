@@ -1,13 +1,18 @@
 'use client'
 
 import { Keypair, PublicKey } from '@solana/web3.js'
-import { useMemo } from 'react'
 import { ellipsify } from '../ui/ui-layout'
 import { ExplorerLink } from '../cluster/cluster-ui'
 import { useTodoProgram, useTodoProgramAccount } from './todo-data-access'
+import { useState } from 'react'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 export function TodoCreate() {
-  const { initialize } = useTodoProgram()
+const [title, setTitle] = useState('');
+const [description, setDescription] = useState('');
+const { createEntry } = useTodoProgram();
+const { publicKey } = useWallet();
+
 
   return (
     <button

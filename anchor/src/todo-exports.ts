@@ -21,7 +21,7 @@ export function getTodoProgramId(cluster: Cluster) {
     case 'devnet':
     case 'testnet':
       // This is the program ID for the Todo program on devnet and testnet.
-      return new PublicKey('coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF')
+      return new PublicKey('J5oFKN33T8k7Y4rKg8AR9F3NPyDXTJUto821EQj6WGjD')
     case 'mainnet-beta':
     default:
       return TODO_PROGRAM_ID

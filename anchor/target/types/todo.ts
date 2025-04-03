@@ -5,108 +5,208 @@
  * IDL can be found at `target/idl/todo.json`.
  */
 export type Todo = {
-  address: 'coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF'
-  metadata: {
-    name: 'todo'
-    version: '0.1.0'
-    spec: '0.1.0'
-    description: 'Created with Anchor'
-  }
-  instructions: [
+  "address": "J5oFKN33T8k7Y4rKg8AR9F3NPyDXTJUto821EQj6WGjD",
+  "metadata": {
+    "name": "todo",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
     {
-      name: 'close'
-      discriminator: [98, 165, 201, 177, 108, 65, 206, 96]
-      accounts: [
+      "name": "createTodo",
+      "discriminator": [
+        250,
+        161,
+        142,
+        148,
+        131,
+        48,
+        194,
+        181
+      ],
+      "accounts": [
         {
-          name: 'payer'
-          writable: true
-          signer: true
+          "name": "todoEntry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "title"
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
         },
         {
-          name: 'todo'
-          writable: true
-        },
-      ]
-      args: []
-    },
-    {
-      name: 'decrement'
-      discriminator: [106, 227, 168, 59, 248, 27, 150, 101]
-      accounts: [
-        {
-          name: 'todo'
-          writable: true
-        },
-      ]
-      args: []
-    },
-    {
-      name: 'increment'
-      discriminator: [11, 18, 104, 9, 104, 174, 59, 33]
-      accounts: [
-        {
-          name: 'todo'
-          writable: true
-        },
-      ]
-      args: []
-    },
-    {
-      name: 'initialize'
-      discriminator: [175, 175, 109, 31, 13, 152, 155, 237]
-      accounts: [
-        {
-          name: 'payer'
-          writable: true
-          signer: true
+          "name": "owner",
+          "writable": true,
+          "signer": true
         },
         {
-          name: 'todo'
-          writable: true
-          signer: true
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "title",
+          "type": "string"
         },
         {
-          name: 'systemProgram'
-          address: '11111111111111111111111111111111'
-        },
-      ]
-      args: []
-    },
-    {
-      name: 'set'
-      discriminator: [198, 51, 53, 241, 116, 29, 126, 194]
-      accounts: [
-        {
-          name: 'todo'
-          writable: true
-        },
-      ]
-      args: [
-        {
-          name: 'value'
-          type: 'u8'
-        },
+          "name": "description",
+          "type": "string"
+        }
       ]
     },
-  ]
-  accounts: [
     {
-      name: 'todo'
-      discriminator: [255, 176, 4, 245, 188, 253, 124, 25]
+      "name": "deleteTodo",
+      "discriminator": [
+        224,
+        212,
+        234,
+        177,
+        90,
+        57,
+        219,
+        115
+      ],
+      "accounts": [
+        {
+          "name": "todoEntry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "title"
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "title",
+          "type": "string"
+        }
+      ]
     },
-  ]
-  types: [
     {
-      name: 'todo'
-      type: {
-        kind: 'struct'
-        fields: [
+      "name": "updateTodo",
+      "discriminator": [
+        105,
+        8,
+        31,
+        183,
+        159,
+        73,
+        203,
+        134
+      ],
+      "accounts": [
+        {
+          "name": "todoEntry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "title"
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "todoEntryState",
+      "discriminator": [
+        182,
+        253,
+        185,
+        63,
+        128,
+        8,
+        80,
+        64
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "todoEntryState",
+      "type": {
+        "kind": "struct",
+        "fields": [
           {
-            name: 'count'
-            type: 'u8'
+            "name": "owner",
+            "type": "pubkey"
           },
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "completed",
+            "type": "bool"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          }
         ]
       }
-    },
+    }
   ]
-}
+};

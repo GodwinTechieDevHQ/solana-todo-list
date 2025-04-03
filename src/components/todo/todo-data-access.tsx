@@ -10,6 +10,12 @@ import { useCluster } from '../cluster/cluster-data-access'
 import { useAnchorProvider } from '../solana/solana-provider'
 import { useTransactionToast } from '../ui/ui-layout'
 
+interface CreateEntryArgs {
+  title: string;
+  description: string;
+  owner:PublicKey;
+}
+
 export function useTodoProgram() {
   const { connection } = useConnection()
   const { cluster } = useCluster()
@@ -20,7 +26,7 @@ export function useTodoProgram() {
 
   const accounts = useQuery({
     queryKey: ['todo', 'all', { cluster }],
-    queryFn: () => program.account.todo.all(),
+    queryFn: () => program.account.todoEntryState.all(),
   })
 
   const getProgramAccount = useQuery({
@@ -28,25 +34,28 @@ export function useTodoProgram() {
     queryFn: () => connection.getParsedAccountInfo(programId),
   })
 
-  const initialize = useMutation({
-    mutationKey: ['todo', 'initialize', { cluster }],
-    mutationFn: (keypair: Keypair) =>
-      program.methods.initialize().accounts({ todo: keypair.publicKey }).signers([keypair]).rpc(),
-    onSuccess: (signature) => {
-      transactionToast(signature)
-      return accounts.refetch()
+  const createEntry = useMutation<string, Error, CreateEntryArgs>({
+    mutationKey: ['todoEntry', 'create', { cluster }],
+    mutationFn: async ({ title, description, owner }) => {
+      return program.methods.createTodo(title, description).rpc();
     },
-    onError: () => toast.error('Failed to initialize account'),
-  })
+    onSuccess: (signature) => {
+      transactionToast(signature);
+      accounts.refetch();
+    },
+    onError: (error) => {
+      toast.error(`Error creating entry: ${error.message}`);
+    },
+  });
 
   return {
     program,
-    programId,
     accounts,
     getProgramAccount,
-    initialize,
-  }
+    createEntry,
+  };
 }
+
 
 export function useTodoProgramAccount({ account }: { account: PublicKey }) {
   const { cluster } = useCluster()
@@ -55,50 +64,37 @@ export function useTodoProgramAccount({ account }: { account: PublicKey }) {
 
   const accountQuery = useQuery({
     queryKey: ['todo', 'fetch', { cluster, account }],
-    queryFn: () => program.account.todo.fetch(account),
-  })
+    queryFn: () => program.account.todoEntryState.fetch(account),
+  });
 
-  const closeMutation = useMutation({
-    mutationKey: ['todo', 'close', { cluster, account }],
-    mutationFn: () => program.methods.close().accounts({ todo: account }).rpc(),
-    onSuccess: (tx) => {
-      transactionToast(tx)
-      return accounts.refetch()
-    },
-  })
+  const updateEntry = useMutation<string, Error, CreateEntryArgs>  ({
+  mutationKey: ['todoEntry', 'update', { cluster }],
+  mutationFn: async ({ title, description }) => {
+    return program.methods.updateTodo(title, description).rpc();
+  },
+  onSuccess: (signature) => {
+    transactionToast(signature);
+    accounts.refetch();
+  },
+  onError: (error) => {
+    toast.error(`Error updating entry: ${error.message}`);
+  },
+});
 
-  const decrementMutation = useMutation({
-    mutationKey: ['todo', 'decrement', { cluster, account }],
-    mutationFn: () => program.methods.decrement().accounts({ todo: account }).rpc(),
-    onSuccess: (tx) => {
-      transactionToast(tx)
-      return accountQuery.refetch()
-    },
-  })
+const deleteEntry = useMutation({
+  mutationKey: ['todoEntry', 'delete', { cluster }],
+  mutationFn: (title: string) => {
+    return program.methods.deleteTodo(title).rpc();
+  },
+  onSuccess: (signature) => {
+    transactionToast(signature);
+    accounts.refetch();
+  },
+});
 
-  const incrementMutation = useMutation({
-    mutationKey: ['todo', 'increment', { cluster, account }],
-    mutationFn: () => program.methods.increment().accounts({ todo: account }).rpc(),
-    onSuccess: (tx) => {
-      transactionToast(tx)
-      return accountQuery.refetch()
-    },
-  })
-
-  const setMutation = useMutation({
-    mutationKey: ['todo', 'set', { cluster, account }],
-    mutationFn: (value: number) => program.methods.set(value).accounts({ todo: account }).rpc(),
-    onSuccess: (tx) => {
-      transactionToast(tx)
-      return accountQuery.refetch()
-    },
-  })
-
-  return {
-    accountQuery,
-    closeMutation,
-    decrementMutation,
-    incrementMutation,
-    setMutation,
-  }
+return {
+  accountQuery,
+  updateEntry,
+  deleteEntry,
+};
 }
